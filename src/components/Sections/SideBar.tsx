@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { server } from "../utils/database";
 
-export default function SideBar({ setSearchValues, filterData, searchValues }) {
+export default function SideBar({
+  setSearchValues,
+  filterData,
+  searchValues,
+}: any) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [categoriesList, setCategoriesList] = useState(null);
   const [brandsList, setBrandsList] = useState(null);
@@ -17,13 +22,11 @@ export default function SideBar({ setSearchValues, filterData, searchValues }) {
   ]);
 
   async function fetchCategories() {
-    const res = await fetch("http://localhost:5050/categories");
-    const data = await res.json();
+    const data = server.getCategories();
     setCategoriesList(data);
   }
   async function fetchBrands() {
-    const res = await fetch("http://localhost:5050/brands");
-    const data = await res.json();
+    const data = server.getBrands();
     setBrandsList(data);
   }
 

@@ -3,6 +3,7 @@ import SideBar from "../Sections/SideBar";
 import ProductCard from "../Sections/ProductCard";
 import { useEffect, useState } from "react";
 import { IProduct } from "../types/common";
+import { server } from "../utils/database";
 
 export default function Home() {
   const [products, setProducts] = useState<null | [] | undefined | IProduct[]>(
@@ -18,8 +19,7 @@ export default function Home() {
     },
   });
   async function fetchData() {
-    const res = await fetch("http://localhost:5050/products");
-    const data = await res.json();
+    const data = server.getProducts();
     return data;
   }
   async function fetchProductData() {

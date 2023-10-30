@@ -626,3 +626,9 @@ const getCategories = () => {
 const getBrands = () => {
   return data?.brands;
 };
+
+export const server = {
+  getProducts,
+  getCategories,
+  getBrands,
+};
