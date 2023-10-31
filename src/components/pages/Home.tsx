@@ -29,9 +29,10 @@ export default function Home() {
   useEffect(() => {
     fetchProductData();
   }, []);
-  const filterData = async (reset = "") => {
+
+  const filterData = async (resetData = "") => {
     const myProducts = await fetchData();
-    if (reset !== "") {
+    if (resetData !== "") {
       setProducts(myProducts);
       return;
     }
@@ -83,6 +84,7 @@ export default function Home() {
 
     setProducts(filteredProductsByPrice);
   };
+
   return (
     <section>
       <Header />
@@ -100,7 +102,7 @@ export default function Home() {
                 <div role="status">
                   <svg
                     aria-hidden="true"
-                    class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                    className="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
                     viewBox="0 0 100 101"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -114,18 +116,18 @@ export default function Home() {
                       fill="currentFill"
                     />
                   </svg>
-                  <span class="sr-only">Loading...</span>
+                  <span className="sr-only">Loading...</span>
                 </div>
               </div>
             ) : (
               <div>
-                {products?.length === 0 ? (
+                {products?.length === 0 || products === undefined ? (
                   <div>
                     <h2>No products</h2>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-10 w-fit mx-auto">
-                    {products.map((product: any) => (
+                    {products.map((product: IProduct) => (
                       <ProductCard key={product.id} product={product} />
                     ))}
                   </div>

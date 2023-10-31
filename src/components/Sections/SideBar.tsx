@@ -1,16 +1,28 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { server } from "../utils/database";
+import {
+  IBrandsList,
+  ICategoriesList,
+  IPriceList,
+  ISearchValues,
+} from "../types/common";
 
 export default function SideBar({
   setSearchValues,
   filterData,
   searchValues,
-}: any) {
+}: {
+  setSearchValues: (data: ISearchValues) => void;
+  filterData: (resetData?: string | undefined) => void;
+  searchValues: ISearchValues;
+}) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [categoriesList, setCategoriesList] = useState(null);
-  const [brandsList, setBrandsList] = useState(null);
-  const [priceList, setPriceList] = useState([
+  const [categoriesList, setCategoriesList] = useState<ICategoriesList | null>(
+    null
+  );
+  const [brandsList, setBrandsList] = useState<IBrandsList | null>(null);
+  const priceList: IPriceList = [
     { min: 0, max: 100 },
     { min: 100, max: 200 },
     { min: 200, max: 300 },
@@ -19,7 +31,7 @@ export default function SideBar({
     { min: 500, max: 1000 },
     { min: 1000, max: 2000 },
     { min: 2000, max: 5000 },
-  ]);
+  ];
 
   async function fetchCategories() {
     const data = server.getCategories();

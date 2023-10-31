@@ -1,4 +1,12 @@
-const data = {
+import { IProduct } from "../types/common";
+
+type IData = {
+  products: IProduct[];
+  categories: string[];
+  brands: string[];
+};
+
+const data: IData = {
   products: [
     {
       id: 1,
