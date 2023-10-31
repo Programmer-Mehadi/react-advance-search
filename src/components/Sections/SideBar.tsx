@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import { server } from "../utils/database";
 import {
   IBrandsList,
@@ -10,19 +9,17 @@ import {
 
 export default function SideBar({
   setSearchValues,
-  filterData,
   searchValues,
 }: {
   setSearchValues: (data: ISearchValues) => void;
-  filterData: (resetData?: string | undefined) => void;
   searchValues: ISearchValues;
 }) {
-  const [searchParams, setSearchParams] = useSearchParams();
   const [categoriesList, setCategoriesList] = useState<ICategoriesList | null>(
     null
   );
   const [brandsList, setBrandsList] = useState<IBrandsList | null>(null);
   const priceList: IPriceList = [
+    { min: 0, max: 5000 },
     { min: 0, max: 100 },
     { min: 100, max: 200 },
     { min: 200, max: 300 },
@@ -43,33 +40,9 @@ export default function SideBar({
   }
 
   useEffect(() => {
-    getSearchFromUrl();
     fetchCategories();
     fetchBrands();
   }, []);
-
-  const getSearchFromUrl = () => {
-    const text = searchParams.get("text") || "";
-    const category = searchParams.get("category") || "";
-    const brand = searchParams.get("brand") || "";
-    const minPrice = Number(searchParams.get("minPrice")) || 0;
-    const maxPrice = Number(searchParams.get("maxPrice")) || 5000;
-    setSearchValues({
-      text,
-      category,
-      brand,
-      price: {
-        min: minPrice,
-        max: maxPrice,
-      },
-    });
-  };
-
-  const setSearchIntoUrl = () => {
-    const searchParamsText = `text=${searchValues.text}&category=${searchValues.category}&brand=${searchValues.brand}&minPrice=${searchValues.price.min}&maxPrice=${searchValues.price.max}`;
-    setSearchParams(searchParamsText);
-    filterData();
-  };
 
   return (
     <aside
@@ -90,7 +63,7 @@ export default function SideBar({
             <div className="flex gap-1">
               <button
                 type="button"
-                className="text-white bg-red-800 hover:bg-red-900 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-[4px] text-sm px-3 py-1   dark:bg-red-800 dark:hover:bg-red-700 dark:focus:ring-red-700 dark:border-red-700"
+                className="text-white bg-red-800 hover:bg-red-900 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-[4px] text-sm px-3 py-1 dark:bg-red-800 dark:hover:bg-red-700 dark:focus:ring-red-700 dark:border-red-700"
                 onClick={() => {
                   setSearchValues({
                     text: "",
@@ -101,26 +74,17 @@ export default function SideBar({
                       max: 5000,
                     },
                   });
-                  setSearchParams();
-                  filterData("reset");
                 }}
               >
                 <i className="fas fa-xmark"></i>
-              </button>
-              <button
-                type="button"
-                className="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-[4px] text-sm px-3 py-1   dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
-                onClick={setSearchIntoUrl}
-              >
-                <i className="fas fa-search"></i>
               </button>
             </div>
           </div>
           <input
             type="text"
-            onChange={(e) =>
-              setSearchValues({ ...searchValues, text: e.target.value })
-            }
+            onChange={(e) => {
+              setSearchValues({ ...searchValues, text: e.target.value });
+            }}
             value={searchValues.text}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           />

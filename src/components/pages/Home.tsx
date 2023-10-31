@@ -4,8 +4,10 @@ import ProductCard from "../Sections/ProductCard";
 import { useEffect, useState } from "react";
 import { IProduct } from "../types/common";
 import { server } from "../utils/database";
+import { useSearchParams } from "react-router-dom";
 
 export default function Home() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<null | [] | undefined | IProduct[]>(
     null
   );
@@ -19,20 +21,66 @@ export default function Home() {
     },
   });
   async function fetchData() {
-    const data = server.getProducts();
+    const data: IProduct[] | [] = server.getProducts();
     return data;
   }
-  async function fetchProductData() {
-    const data: IProduct[] = await fetchData();
-    setProducts(data);
-  }
+
   useEffect(() => {
-    fetchProductData();
+    setSearchIntoUrl();
+    getSearchFromUrl();
+    filterData();
   }, []);
 
-  const filterData = async (resetData = "") => {
+  const getSearchFromUrl = () => {
+    const text = searchParams.get("text") || "";
+    const category = searchParams.get("category") || "";
+    const brand = searchParams.get("brand") || "";
+    const minPrice = Number(searchParams.get("minPrice")) || 0;
+    const maxPrice = Number(searchParams.get("maxPrice")) || 5000;
+    setSearchValues({
+      text,
+      category,
+      brand,
+      price: {
+        min: minPrice,
+        max: maxPrice,
+      },
+    });
+  };
+
+  useEffect(() => {
+    setSearchIntoUrl();
+    filterData();
+  }, [searchValues]);
+
+  const setSearchIntoUrl = () => {
+    let searchParamsText: string = "";
+
+    if (searchValues.text !== "") {
+      searchParamsText += `&text=${searchValues.text}`;
+    }
+    if (searchValues.category !== "" && searchValues.category !== "All") {
+      searchParamsText += `&category=${searchValues.category}`;
+    }
+    if (searchValues.brand !== "" && searchValues.brand !== "All") {
+      searchParamsText += `&brand=${searchValues.brand}`;
+    }
+    if (searchValues.price.max !== 5000) {
+      searchParamsText += `&minPrice=${searchValues.price.min}`;
+    }
+    if (searchValues.price.max !== 5000) {
+      searchParamsText += `&maxPrice=${searchValues.price.max}`;
+    }
+    if (searchParamsText.length > 0) {
+      setSearchParams(searchParamsText);
+    } else {
+      setSearchParams("");
+    }
+  };
+
+  const filterData = async (resetData = "no") => {
     const myProducts = await fetchData();
-    if (resetData !== "") {
+    if (resetData === "reset") {
       setProducts(myProducts);
       return;
     }
@@ -48,7 +96,7 @@ export default function Home() {
       filteredProductsByText = myProducts;
     }
     let filteredProductsByCategory: IProduct[] | undefined | null = [];
-    if (searchValues.category !== "") {
+    if (searchValues.category !== "" && searchValues.category !== "All") {
       filteredProductsByCategory = filteredProductsByText?.filter(
         (product: IProduct) => {
           return product.category
@@ -61,7 +109,7 @@ export default function Home() {
     }
     let filteredProductsByBrand: IProduct[] | undefined | null = [];
 
-    if (searchValues.brand !== "") {
+    if (searchValues.brand !== "" && searchValues.brand !== "All") {
       filteredProductsByBrand = filteredProductsByCategory?.filter(
         (product: IProduct) => {
           return product.brand
@@ -88,11 +136,7 @@ export default function Home() {
   return (
     <section>
       <Header />
-      <SideBar
-        setSearchValues={setSearchValues}
-        filterData={filterData}
-        searchValues={searchValues}
-      />
+      <SideBar setSearchValues={setSearchValues} searchValues={searchValues} />
 
       <div className="p-4 sm:ml-64">
         <div className="p-4 rounded-lg dark:border-gray-700 mt-14">

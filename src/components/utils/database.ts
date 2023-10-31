@@ -585,6 +585,7 @@ const data: IData = {
     },
   ],
   categories: [
+    "All",
     "smartphones",
     "laptops",
     "fragrances",
@@ -593,6 +594,7 @@ const data: IData = {
     "home-decoration",
   ],
   brands: [
+    "All",
     "Apple",
     "Samsung",
     "OPPO",
